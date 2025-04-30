@@ -4,10 +4,7 @@ import Register from "./register"
 import Home from "./Home"
 import Dashboard from "./dashboard"
 
-// Im stupid, I don't know how to use react-router-dom
-// I don't know how to use react-router-dom
-// I don't know how to use react-router-dom
-// I don't know how to use react-router-dom
+
 
 const App = () => {
   return (
