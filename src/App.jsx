@@ -4,8 +4,6 @@ import Register from "./register"
 import Home from "./Home"
 import Dashboard from "./dashboard"
 
-
-
 const App = () => {
   return (
     <Router>
