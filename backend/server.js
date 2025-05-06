@@ -61,7 +61,6 @@ app.post('/login', (req, res) => {
 });
 
 
-
 const ENCRYPTION_KEY = Buffer.from('0123456789abcdef0123456789abcdef', 'utf8'); 
 const IV_LENGTH = 16;
 

@@ -5,7 +5,7 @@ import invisible from './assets/eye_closed.png'
 import arrow from './assets/arrow.png'
 import axios from 'axios'; 
 
-function Signin() {
+function AdminSignin() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -13,7 +13,7 @@ function Signin() {
   const [success, setSuccess] = useState('');
   const [username, setUsername] = useState(''); 
   const [partialEmail, setPartialEmail] = useState('');
-  const [selectedDomain, setSelectedDomain] = useState('@porsche.com');
+  const [selectedDomain, setSelectedDomain] = useState('@porsche-corporate.com');
 
   
   const handleSignin = async (e) => {
@@ -28,10 +28,10 @@ function Signin() {
         setSuccess(``);
         setUsername(res.data.username);
         setPartialEmail('');
-        setSelectedDomain('@porsche.com');
+        setSelectedDomain('@porsche-corporate.com');
         setPassword('');
         setTimeout(() => {
-          window.location.href = '/dashboard';
+          window.location.href = '/register';
         }, 1);
       }
     } catch (err) {
@@ -47,7 +47,7 @@ function Signin() {
           <a href="/" className="absolute top-4 left-4 hover:scale-110 transition duration-300 ease-in-out">
             <img src={arrow} alt="Back" className="w-8 h-8 cursor-pointer" />
           </a>
-          <h1 className="text-5xl font-bold text-white">Sign In</h1>
+          <h1 className="text-5xl font-bold text-white">Admin Sign In</h1>
           
           <form className="w-full flex flex-col gap-4" onSubmit={handleSignin}>
             
@@ -74,10 +74,7 @@ function Signin() {
                   value={selectedDomain}
                   onChange={e => setSelectedDomain(e.target.value)}
                 >
-                  <option value="@porsche.com" className="bg-fuchsia-500"> @porsche.com</option>
                   <option value="@porsche-corporate.com" className="bg-fuchsia-500"> @porsche-corporate.com</option>
-                  <option value="@porsche-janitorial.com" className="bg-fuchsia-500"> @porsche-janitorial.com</option>
-                  <option value="@porsche-engineering.com" className="bg-fuchsia-500"> @porsche-engineering.com</option>
                   <option value="@porsche-executive.com" className="bg-fuchsia-500"> @porsche-executive.com</option>
                 </select>
               </div>
@@ -114,7 +111,6 @@ function Signin() {
             
             {error && <div className='text-red-400'>{error}</div>}
             {success && <div className='text-green-400'>{success}</div>}
-            <p className="text-sm text-white font-semibold">Not Registered? <a href="/adminsignin" className="text-orange-400 hover:underline">Register</a></p>
           </form>
         </div>
         <img src={porsche} alt="" className=' shadow-2xl w - [450px] object-cover xl:rounded-tr-2xl xl:rounded-br-2xl xl:block hidden outline outline-white  hover:shadow-white transition duration-300 ease-in-out'/>
@@ -123,4 +119,4 @@ function Signin() {
   )
 }
 
-export default Signin;
+export default AdminSignin;

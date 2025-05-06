@@ -1,11 +1,11 @@
 function Home() {
     return (
-        <div className="min-h-screen bg-gradient-to-r from-violet-500 from-10% via-fuchsia-500 via-50% to-orange-500 to-100%">
+        <div className="min-h-screen bg-gradient-to-r from-violet-500 from-10% via-fuchsia-500 via-50% to-orange-500 to-100% animate-gradient">
             <nav className="px-6 py-4 flex justify-between items-center">
                 <h2 className="text-2xl font-bold text-orange-500">SpeedMail</h2>
                 <div className="space-x-4">
                     <a href="/signin" className="text-gray-600 hover:text-violet-600">Sign In</a>
-                    <a href="/register" className="px-4 py-2 bg-fuchsia-600 text-white rounded-lg hover:bg-fuchsia-700">
+                    <a href="/adminsignin" className="px-4 py-2 bg-fuchsia-600 text-white rounded-lg hover:bg-fuchsia-700">
                         Register
                     </a>
                 </div>
@@ -21,7 +21,7 @@ function Home() {
                         Streamline your communication with our powerful email management platform.
                     </p>
                     <div className="space-x-4 pt-4">
-                        <a href="/register" 
+                        <a href="/signin" 
                            className="px-8 py-3 bg-fuchsia-600 text-white rounded-lg hover:bg-fuchsia-700 inline-block">
                             Get Started
                         </a>

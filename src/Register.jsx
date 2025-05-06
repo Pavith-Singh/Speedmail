@@ -52,7 +52,7 @@ function Register() {
   }
 
   return (
-    <section className="min-h-screen overflow-auto flex items-center justify-center font-mono bg-gradient-to-r from-violet-500 from-10% via-fuchsia-500 via-50% to-orange-500 to-100% px-4 py-8">
+    <section className="min-h-screen overflow-auto flex items-center justify-center font-mono bg-gradient-to-r from-violet-500 from-10% via-fuchsia-500 via-50% to-orange-500 animate-gradient to-100% px-4 py-8">
       <div className="flex shadow-2xl">
         <div className="flex flex-col items-center justify-center text-center p-16 gap-8 outline outline-white bg-fushia-500 rounded-2xl shadow-2xl hover:shadow-white transition duration-300 ease-in-out relative">
           <a href="/" className="absolute top-4 left-4 hover:scale-110 transition duration-300 ease-in-out">

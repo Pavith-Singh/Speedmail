@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 const names = [
   { name: 'Anna Becker', email: 'anna.becker@porsche-executive.com' },
   { name: 'Liam Chen', email: 'liam.chen@porsche.com' },
-  { name: 'Sophie Müller', email: 'sophie.muller@porsche-engineering.com' },
+  { name: 'Soham Grover', email: 'soham.grover@porsche-engineering.com' },
   { name: 'James Smith', email: 'james.smith@porsche-corporate.com' },
   { name: 'Lucas Wang', email: 'lucas.wang@porsche-janitorial.com' },
   { name: 'Olivia Brown', email: 'olivia.brown@porsche-executive.com' },
@@ -249,7 +249,7 @@ const Sidebar = ({ folders, currentFolder, setCurrentFolder, onCompose }) => (
     <div className="flex flex-col h-full">
       <button
         onClick={onCompose}
-        className="mb-6 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-orange-500 text-white py-2 px-4 rounded shadow-lg hover:scale-105 hover:shadow-xl transition duration-300 ease-in-out outline outline-white cursor-pointer"
+        className="mb-6 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-orange-500 animate-gradient text-white py-2 px-4 rounded shadow-lg hover:scale-105 hover:shadow-xl transition duration-300 ease-in-out outline outline-white cursor-pointer"
       >
         Compose
       </button>
@@ -260,7 +260,7 @@ const Sidebar = ({ folders, currentFolder, setCurrentFolder, onCompose }) => (
             onClick={() => setCurrentFolder(folder)}
             className={`text-left px-3 py-2 rounded transition duration-300 ease-in-out font-semibold outline outline-1 outline-white/20 cursor-pointer ${
               currentFolder === folder
-                ? 'bg-gradient-to-r from-violet-200 via-fuchsia-200 to-orange-200 text-fuchsia-700 scale-105 shadow'
+                ? 'bg-gradient-to-r from-violet-200 via-fuchsia-200 to-orange-200 text-fuchsia-700 animate-gradient scale-105 shadow'
                 : 'hover:bg-fuchsia-100 hover:scale-105 hover:shadow-md'
             }`}
           >
@@ -364,7 +364,7 @@ const EmailDetail = ({ email, onReply }) => {
       <div className="whitespace-pre-line text-gray-800">{email.content}</div>
       <button
         onClick={onReply}
-        className="mt-6 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-orange-500 text-white py-2 px-4 rounded shadow-lg hover:scale-110 hover:shadow-xl transition duration-300 outline outline-white cursor-pointer"
+        className="mt-6 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-orange-500 animate-gradient text-white py-2 px-4 rounded shadow-lg hover:scale-110 hover:shadow-xl transition duration-300 outline outline-white cursor-pointer"
       >
         Reply
       </button>
@@ -411,7 +411,7 @@ const ComposeModal = ({ isOpen, onClose, onSend, composeTo, setComposeTo, compos
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white/90 w-11/12 md:w-1/2 lg:w-1/3 rounded-lg shadow-2xl outline outline-4 outline-gradient-to-r from-violet-500 via-fuchsia-500 to-orange-500 animate-fadeIn">
+      <div className="bg-white/90 w-11/12 md:w-1/2 lg:w-1/3 rounded-lg shadow-2xl outline outline-4 outline-gradient-to-r from-violet-500 via-fuchsia-500 to-orange-500 animate-gradient animate-fadeIn">
         <div className="flex justify-between items-center border-b px-6 py-4">
           <h3 className="text-xl font-semibold text-fuchsia-700">Compose Email</h3>
           <button onClick={onClose} className="text-gray-600 hover:text-fuchsia-700 text-2xl transition duration-200 cursor-pointer">&times;</button>
@@ -653,9 +653,9 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-r from-violet-500 via-fuchsia-500 to-orange-500">
+    <div className="h-screen flex flex-col bg-gradient-to-r from-violet-500 via-fuchsia-500 to-orange-500 animate-gradient">
       {/* Top header bar with gradient background and shadow */}
-      <header className="bg-gradient-to-r from-violet-600 via-fuchsia-600 to-orange-500 text-white px-6 py-4 flex items-center justify-between shadow-md">
+      <header className="bg-gradient-to-r from-violet-600 via-fuchsia-600 to-orange-500 animate-gradient text-white px-6 py-4 flex items-center justify-between shadow-md">
         <div
           className="text-2xl font-bold text-orange-400 drop-shadow-lg cursor-pointer"
           onClick={() => window.location.href = '/'}
