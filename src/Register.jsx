@@ -65,7 +65,7 @@ function Register() {
               <div className="flex items-center w-full group">
                 <input
                   type="text"
-                  placeholder="johnpork"
+                  placeholder="john.doe"
                   value={partialEmail}
                   onChange={(e) => setPartialEmail(e.target.value)}
                   className="rounded-r-none w-full rounded-md rounded-tr-none rounded-br-none p-1 px-2 py-1 border-2 border-white outline-none bg-white/10 text-white text-base
@@ -95,7 +95,7 @@ function Register() {
               <span className="text-lg text-white">Username</span>
               <input
                 type="text"
-                placeholder="John Pork"
+                placeholder="John Doe"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="w-full rounded-md p-1 px-2 py-1 border-2 outline-none focus:border-orange-500 focus:bg-fuchsia-500 hover:bg-fuchsia-400 transition duration-300 ease-in-out text-base"

@@ -56,7 +56,7 @@ function Signin() {
               <div className="flex items-center w-full group">
                 <input
                   type="text"
-                  placeholder="johnpork"
+                  placeholder="john.doe"
                   value={partialEmail}
                   onChange={e => setPartialEmail(e.target.value)}
                   className="rounded-r-none w-full rounded-md rounded-tr-none rounded-br-none p-1 px-2 py-1 border-2 border-white outline-none bg-white/10 text-white text-base
