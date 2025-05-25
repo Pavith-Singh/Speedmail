@@ -26,7 +26,7 @@ function Home() {
                             Get Started
                         </a>
                         <a href="https://www.porsche.com/australia/" 
-                           className="px-8 py-3 border border-gray-300 rounded-lg hover:border-orange-500 hover:fuchsia-600 hover:text-orange-500 inline-block">
+                           className="px-8 py-3 border border-gray-300 rounded-lg hover:border-orange-500 hover:fuchsia-600 hover:text-white inline-block">
                             Learn More
                         </a>
                     </div>
