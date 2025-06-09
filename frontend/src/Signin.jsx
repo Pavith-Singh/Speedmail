@@ -22,10 +22,10 @@ function Signin() {
     setSuccess('');
     const email = partialEmail + selectedDomain;
     try {
-      
       const res = await axios.post('http://localhost:3000/login', { email, password });
-      if (res.data.success) {
-        setSuccess(``);
+      if (res.data.success && res.data.token) {
+        localStorage.setItem('token', res.data.token);
+        setSuccess('');
         setUsername(res.data.username);
         setPartialEmail('');
         setSelectedDomain('@porsche.com');

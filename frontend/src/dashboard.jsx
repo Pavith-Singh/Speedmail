@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const names = [
   { name: 'Anna Becker', email: 'anna.becker@porsche-executive.com' },
@@ -272,8 +272,7 @@ const Sidebar = ({ folders, currentFolder, setCurrentFolder, onCompose }) => (
   </div>
 );
 
-// -------------------------------------------------------------------------
-// FeaturedCarousel Component: A horizontal carousel showing featured emails.
+
 const FeaturedCarousel = ({ emails, onSelectEmail, selectedEmail }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const itemsToShow = 3;
@@ -652,9 +651,17 @@ const Dashboard = () => {
     setIsReplyOpen(false);
   };
 
+  // Protect dashboard: redirect to /signin if not authenticated
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = '/signin';
+    }
+  }, []);
+
   return (
     <div className="h-screen flex flex-col bg-gradient-to-r from-violet-500 via-fuchsia-500 to-orange-500 animate-gradient">
-      {/* Top header bar with gradient background and shadow */}
+      
       <header className="bg-gradient-to-r from-violet-600 via-fuchsia-600 to-orange-500 animate-gradient text-white px-6 py-4 flex items-center justify-between shadow-md">
         <div
           className="text-2xl font-bold text-orange-400 drop-shadow-lg cursor-pointer"

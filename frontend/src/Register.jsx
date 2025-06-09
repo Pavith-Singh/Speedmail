@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import visible from './assets/eye.png'
 import invisible from './assets/eye_closed.png'
 import arrow from './assets/arrow.png'
@@ -13,6 +13,23 @@ function Register() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [selectedDomain, setSelectedDomain] = useState('@porsche.com');
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = '/adminsignin';
+      return;
+    }
+    // Decode token to check isAdmin (no backend call needed for this check)
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      if (!payload.isAdmin) {
+        window.location.href = '/adminsignin';
+      }
+    } catch (e) {
+      window.location.href = '/adminsignin';
+    }
+  }, []);
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -36,15 +53,17 @@ function Register() {
 
     try {
       const res = await axios.post('http://localhost:3000/register', {email, username, password});
-      if (res.data.success) {
-        setSuccess('Registration successful!');
+      if (res.data.success && res.data.token) {
+
+        localStorage.setItem('token', res.data.token);
+        setSuccess('Registration successful! Redirecting...');
         setPartialEmail('');
         setUsername('');
         setPassword('');
         setConfirmPassword('');
         setTimeout(() => {
-          window.location.href = '/signin';
-        }, 2000);
+          window.location.href = '/dashboard';
+        }, 1000);
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed');
