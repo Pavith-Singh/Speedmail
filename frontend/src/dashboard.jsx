@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const names = [
   { name: 'Anna Becker', email: 'anna.becker@porsche-executive.com' },
@@ -188,61 +189,6 @@ const contents = {
     'This is your final notice. Act now to avoid losing access.'
   ]
 };
-
-const generateMockEmails = () => {
-  const folders = ['Inbox', 'Sent', 'Drafts', 'Spam'];
-  let emails = [];
-  let id = 1;
-  folders.forEach((folder) => {
-    for (let i = 0; i < 50; i++) {
-      let sender, senderEmail;
-      if (folder === 'Sent') {
-        sender = 'You';
-        senderEmail = 'you@porsche.com';
-      } else if (folder === 'Spam') {
-        const person = spammerNames[i % spammerNames.length];
-        sender = person.name;
-        senderEmail = person.email;
-      } else {
-        const person = names[i % names.length];
-        sender = person.name;
-        senderEmail = person.email;
-      }
-      const subjArr = subjects[folder];
-      const snipArr = snippets[folder];
-      const contArr = contents[folder];
-      const idx = i % subjArr.length;
-      
-      // Add domain-specific note based on senderEmail
-      let customNote = "";
-      if (senderEmail.includes("janitorial")) {
-        customNote = "Note: This email pertains to janitorial services and scheduling.";
-      } else if (senderEmail.includes("executive")) {
-        customNote = "Note: This message contains executive updates.";
-      } else if (senderEmail.includes("engineering")) {
-        customNote = "Note: This email includes technical details for the engineering team.";
-      } else if (senderEmail.includes("corporate")) {
-        customNote = "Note: This email relates to corporate announcements.";
-      } else {
-        customNote = "Note: General corporate communication.";
-      }
-      
-      emails.push({
-        id: id++,
-        folder: folder,
-        sender: sender,
-        senderEmail: senderEmail,
-        subject: subjArr[idx],
-        snippet: snipArr[idx],
-        date: `2025-04-${(i % 30) + 1}`,
-        content: `${contArr[idx]}\n\n${customNote}\n\n-- ${sender} <${senderEmail}>`
-      });
-    }
-  });
-  return emails;
-};
-
-const mockEmails = generateMockEmails();
 
 const Sidebar = ({ folders, currentFolder, setCurrentFolder, onCompose }) => (
   <div className="bg-white/70 h-full p-4 border-r border-white/30 shadow-lg">
@@ -562,7 +508,8 @@ const HamburgerMenuModal = ({ isOpen, onClose }) => {
 
 
 const Dashboard = () => {
-  const folders = ['Inbox', 'Sent', 'Drafts', 'Spam'];
+  // Use only Inbox and Sent folders
+  const folders = ['Inbox', 'Sent'];
   const [currentFolder, setCurrentFolder] = useState('Inbox');
   const [selectedEmail, setSelectedEmail] = useState(null);
   const [isComposeOpen, setIsComposeOpen] = useState(false);
@@ -570,8 +517,8 @@ const Dashboard = () => {
   const [showSidebar, setShowSidebar] = useState(true);
   const [showSearch, setShowSearch] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [sentEmails, setSentEmails] = useState([]); 
-  const [allEmails, setAllEmails] = useState([...mockEmails]); 
+  const [emails, setEmails] = useState([]);
+  const [userEmail, setUserEmail] = useState('');
   const [replyContent, setReplyContent] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -579,20 +526,59 @@ const Dashboard = () => {
   const [composeSubject, setComposeSubject] = useState('');
   const [composeBody, setComposeBody] = useState('');
 
+  
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = '/signin';
+      return;
+    }
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      setUserEmail(payload.email);
+    } catch (e) {
+      window.location.href = '/signin';
+      return;
+    }
+    axios.get('http://localhost:3000/emails', { headers: { Authorization: 'Bearer ' + token } })
+      .then(res => {
+        if (res.data.success) {
+          setEmails(res.data.emails);
+        }
+      })
+      .catch(err => {
+        console.error(err);
+      });
+  }, []);
 
-  const emailsForFolder = allEmails.filter((email) => {
-    if (email.folder !== currentFolder) return false;
+  
+  const emailsForFolder = emails.filter((email) => {
+    if (currentFolder === 'Inbox' && email.receiver !== userEmail) return false;
+    if (currentFolder === 'Sent' && email.sender !== userEmail) return false;
     if (!searchTerm) return true;
     const term = searchTerm.toLowerCase();
     return (
-      email.subject.toLowerCase().includes(term) ||
-      email.sender.toLowerCase().includes(term) ||
-      email.snippet.toLowerCase().includes(term)
+      (email.subject && email.subject.toLowerCase().includes(term)) ||
+      (email.sender && email.sender.toLowerCase().includes(term)) ||
+      (email.content && email.content.toLowerCase().includes(term))
     );
   });
 
   const handleSelectEmail = (email) => {
     setSelectedEmail(email);
+  };
+
+  const refreshEmails = () => {
+    const token = localStorage.getItem('token');
+    axios.get('http://localhost:3000/emails', { headers: { Authorization: 'Bearer ' + token } })
+      .then(res => {
+        if (res.data.success) {
+          setEmails(res.data.emails);
+        }
+      })
+      .catch(err => {
+        console.error(err);
+      });
   };
 
   const handleComposeOpen = () => {
@@ -604,23 +590,24 @@ const Dashboard = () => {
   };
 
   const handleSendEmail = () => {
-    // Add composed email to Sent
-    const newEmail = {
-      id: Date.now(),
-      folder: 'Sent',
-      sender: 'You',
-      senderEmail: 'you@porsche.com',
-      subject: composeSubject || '(No Subject)',
-      snippet: (composeBody || '').slice(0, 60) || 'No content.',
-      date: '2025-04-17',
-      content: `${composeBody}\n\nTo: ${composeTo}`
-    };
-    setSentEmails(prev => [...prev, newEmail]);
-    setAllEmails(prev => [...prev, newEmail]);
-    setIsComposeOpen(false);
-    setComposeTo('');
-    setComposeSubject('');
-    setComposeBody('');
+    const token = localStorage.getItem('token');
+    axios.post('http://localhost:3000/send', {
+      receiver: composeTo,
+      subject: composeSubject,
+      content: composeBody
+    }, { headers: { Authorization: 'Bearer ' + token } })
+      .then(res => {
+        if (res.data.success) {
+          refreshEmails();
+          setIsComposeOpen(false);
+          setComposeTo('');
+          setComposeSubject('');
+          setComposeBody('');
+        }
+      })
+      .catch(err => {
+        console.error(err);
+      });
   };
 
   const handleReplyOpen = () => {
@@ -635,23 +622,25 @@ const Dashboard = () => {
   const handleSendReply = () => {
     if (!selectedEmail) return;
     const replySubject = selectedEmail.subject.startsWith('Re:') ? selectedEmail.subject : `Re: ${selectedEmail.subject}`;
-    const replySnippet = replyContent.slice(0, 60) || 'Replied to email.';
-    const replyEmail = {
-      id: Date.now(),
-      folder: 'Sent',
-      sender: 'You',
-      senderEmail: 'you@porsche.com',
+    const replyBody = `${replyContent}\n\n---- Original Message ----\n${selectedEmail.content}`;
+    const token = localStorage.getItem('token');
+    axios.post('http://localhost:3000/send', {
+      receiver: selectedEmail.sender,
       subject: replySubject,
-      snippet: replySnippet,
-      date: '2025-04-17',
-      content: `${replyContent}\n\n---- Original Message ----\n${selectedEmail.content}`
-    };
-    setSentEmails(prev => [...prev, replyEmail]);
-    setAllEmails(prev => [...prev, replyEmail]);
-    setIsReplyOpen(false);
+      content: replyBody
+    }, { headers: { Authorization: 'Bearer ' + token } })
+      .then(res => {
+        if (res.data.success) {
+          refreshEmails();
+          setIsReplyOpen(false);
+        }
+      })
+      .catch(err => {
+        console.error(err);
+      });
   };
 
-  // Protect dashboard: redirect to /signin if not authenticated
+  
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -686,9 +675,9 @@ const Dashboard = () => {
           </button>
         </div>
       </header>
-      {/* Hamburger menu modal */}
+      
       <HamburgerMenuModal isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
-      {/* Search bar */}
+      
       {showSearch && (
         <div className="bg-white/80 px-6 py-2 flex items-center shadow">
           <input
@@ -710,34 +699,26 @@ const Dashboard = () => {
       )}
       
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
+        
         {showSidebar && (
           <aside className="w-64 border-r border-white/30">
             <Sidebar
               folders={folders}
               currentFolder={currentFolder}
-              setCurrentFolder={(folder) => {
-                setCurrentFolder(folder);
-                setSelectedEmail(null); 
-              }}
+              setCurrentFolder={(folder) => { setCurrentFolder(folder); setSelectedEmail(null); }}
               onCompose={handleComposeOpen}
             />
           </aside>
         )}
-        {/* Email list column */}
+        
         <section className={`flex flex-col overflow-hidden bg-white/60 border-r border-white/30 ${showSidebar ? 'w-1/3' : 'w-1/2'}`}>
-          <FeaturedCarousel
-            emails={emailsForFolder.slice(0, 10)} 
-            onSelectEmail={handleSelectEmail}
-            selectedEmail={selectedEmail}
-          />
           <EmailList
             emails={emailsForFolder}
             onSelectEmail={handleSelectEmail}
             selectedEmail={selectedEmail}
           />
         </section>
-       
+        
         <section className="flex-1 overflow-y-auto bg-white/80">
           <EmailDetail email={selectedEmail} onReply={handleReplyOpen} />
         </section>
