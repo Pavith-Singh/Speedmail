@@ -74,7 +74,7 @@ app.post('/login', (req, res) => {
   });
 });
 
-// NEW: Endpoint to send an email
+
 app.post('/send', authenticateToken, (req, res) => {
     const { receiver, subject, content } = req.body;
     if (!receiver || !content) {
@@ -82,9 +82,12 @@ app.post('/send', authenticateToken, (req, res) => {
     }
     const sender = req.user.email;
     const date = new Date().toISOString();
+    const subjectEncrypted = encrypt(subject || '(No Subject)');
+    const contentEncrypted = encrypt(content);
+    
     db.run(
         'INSERT INTO emails (sender, receiver, subject, content, date) VALUES (?, ?, ?, ?, ?)',
-        [sender, receiver, subject || '(No Subject)', content, date],
+        [sender, receiver, subjectEncrypted, contentEncrypted, date],
         function(err) {
             if (err) {
                 console.log('Error sending email:', err);
@@ -95,7 +98,7 @@ app.post('/send', authenticateToken, (req, res) => {
     );
 });
 
-// NEW: Endpoint to get emails for the authenticated user
+
 app.get('/emails', authenticateToken, (req, res) => {
     const userEmail = req.user.email;
     db.all(
@@ -106,7 +109,12 @@ app.get('/emails', authenticateToken, (req, res) => {
                 console.log('Error retrieving emails:', err);
                 return res.status(500).json({ message: 'Failed to retrieve emails' });
             }
-            res.json({ success: true, emails: rows });
+            const decryptedRows = rows.map(row => ({
+                ...row,
+                subject: decrypt(row.subject),
+                content: decrypt(row.content)
+            }));
+            res.json({ success: true, emails: decryptedRows });
         }
     );
 });
