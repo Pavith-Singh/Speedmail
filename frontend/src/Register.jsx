@@ -51,7 +51,7 @@ function Register() {
     }
 
     try {
-      const res = await axios.post('http://localhost:3000/register', {email, username, password});
+      const res = await axios.post('https://speedmail.onrender.com/register', {email, username, password});
       if (res.data.success && res.data.token) {
 
         localStorage.setItem('token', res.data.token);

@@ -16,7 +16,7 @@ const ManageAccount = () => {
       window.location.href = '/signin';
       return;
     }
-    axios.get('http://localhost:3000/account', { headers: { Authorization: 'Bearer ' + token } })
+    axios.get('https://speedmail.onrender.com/account', { headers: { Authorization: 'Bearer ' + token } })
       .then(res => {
         setEmail(res.data.email);
         setUsername(res.data.username);
@@ -38,7 +38,7 @@ const ManageAccount = () => {
     if (newUsername) payload.newUsername = newUsername;
     if (newPassword) payload.newPassword = newPassword;
     if (profilePic) payload.profilePic = await fileToBase64(profilePic);
-    axios.put('http://localhost:3000/account', payload, { headers: { Authorization: 'Bearer ' + token } })
+    axios.put('https://speedmail.onrender.com/account', payload, { headers: { Authorization: 'Bearer ' + token } })
       .then(() => setMessage('Account updated'))
       .catch(() => setMessage('Failed to update'));
   };

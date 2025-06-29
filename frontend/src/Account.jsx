@@ -11,7 +11,7 @@ const Account = () => {
       window.location.href = '/signin';
       return;
     }
-    axios.get('http://localhost:3000/account', {
+    axios.get('https://speedmail.onrender.com/account', {
       headers: { Authorization: 'Bearer ' + token }
     })
       .then(res => setInfo(res.data))
@@ -35,7 +35,7 @@ const Account = () => {
           </a>
           <h1 className="text-4xl font-bold text-white mb-6">Account</h1>
           <img
-            src={`http://localhost:3000/profile_pics/${info.email}.png`}
+            src={`https://speedmail.onrender.com/profile_pics/${info.email}.png`}
             alt="Profile"
             className="w-24 h-24 rounded-full mx-auto border-4 border-fuchsia-300 object-cover bg-white/80"
             onError={e => { e.target.onerror = null; e.target.style.display = 'none'; }}

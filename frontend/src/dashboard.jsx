@@ -44,7 +44,7 @@ const EmailList = ({ emails, onSelectEmail, selectedEmail }) => (
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
             <img
-              src={`http://localhost:3000/profile_pics/${email.sender}.png`}
+              src={`https://speedmail.onrender.com/profile_pics/${email.sender}.png`}
               alt="Profile"
               className="w-6 h-6 rounded-full border border-fuchsia-400"
               onError={(e) => { e.target.style.display = 'none'; }}
@@ -176,12 +176,12 @@ const ComposeModal = ({
       try {
         if (editingDraftId) {
           await axios.put(
-            `http://localhost:3000/drafts/${editingDraftId}`,
+            `https://speedmail.onrender.com/drafts/${editingDraftId}`,
             data,
             { headers: { Authorization: 'Bearer ' + token } },
           );
         } else {
-          await axios.post('http://localhost:3000/drafts', data, {
+          await axios.post('https://speedmail.onrender.com/drafts', data, {
             headers: { Authorization: 'Bearer ' + token },
           });
         }
@@ -431,7 +431,7 @@ const Dashboard = () => {
       window.location.href = '/signin';
       return;
     }
-    axios.get('http://localhost:3000/account', {
+    axios.get('https://speedmail.onrender.com/account', {
       headers: { Authorization: 'Bearer ' + token }
     })
     .then(res => {
@@ -451,7 +451,7 @@ const Dashboard = () => {
   const refreshEmails = () => {
     const token = localStorage.getItem('token');
     axios
-      .get(`http://localhost:3000/emails?user=${encodeURIComponent(userEmail)}`, {
+      .get(`https://speedmail.onrender.com/emails?user=${encodeURIComponent(userEmail)}`, {
         headers: { Authorization: 'Bearer ' + token },
       })
       .then((res) => {
@@ -472,7 +472,7 @@ const Dashboard = () => {
   const refreshDrafts = () => {
     const token = localStorage.getItem('token');
     axios
-      .get('http://localhost:3000/drafts', {
+      .get('https://speedmail.onrender.com/drafts', {
         headers: { Authorization: 'Bearer ' + token },
       })
       .then((res) => {
@@ -518,7 +518,7 @@ const Dashboard = () => {
     const token = localStorage.getItem('token');
     axios
       .post(
-        'http://localhost:3000/send',
+        'https://speedmail.onrender.com/send',
         { receiver: composeTo, subject: composeSubject, content: composeBody },
         { headers: { Authorization: 'Bearer ' + token } },
       )
@@ -527,7 +527,7 @@ const Dashboard = () => {
           refreshEmails();
           if (editingDraftId) {
             axios
-              .delete(`http://localhost:3000/drafts/${editingDraftId}`, {
+              .delete(`https://speedmail.onrender.com/drafts/${editingDraftId}`, {
                 headers: { Authorization: 'Bearer ' + token },
               })
               .then(refreshDrafts)
@@ -557,7 +557,7 @@ const Dashboard = () => {
     const token = localStorage.getItem('token');
     axios
       .post(
-        'http://localhost:3000/send',
+        'https://speedmail.onrender.com/send',
         {
           receiver: selectedEmail.sender,
           subject: replySubject,
