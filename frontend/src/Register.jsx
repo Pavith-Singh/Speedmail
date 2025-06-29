@@ -12,7 +12,7 @@ function Register() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [selectedDomain, setSelectedDomain] = useState('@porsche.com');
+  const [selectedDomain, setSelectedDomain] = useState('@porsche-corporate.com');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -20,14 +20,16 @@ function Register() {
       window.location.href = '/adminsignin';
       return;
     }
-    // Decode token to check isAdmin (no backend call needed for this check)
+    
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
+      console.log("Token payload:", payload);  // Debug: check token content
+      // If the token doesn't indicate admin privileges, redirect
       if (!payload.isAdmin) {
-        window.location.href = '/adminsignin';
+        window.location.href = '/register';
       }
     } catch (e) {
-      window.location.href = '/adminsignin';
+      window.location.href = '/register';
     }
   }, []);
 

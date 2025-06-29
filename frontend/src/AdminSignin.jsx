@@ -24,16 +24,13 @@ function AdminSignin() {
     try {
       const res = await axios.post('http://localhost:3000/login', { email, password });
       if (res.data.success && res.data.token) {
-        // Store token in localStorage
+
         localStorage.setItem('token', res.data.token);
         setSuccess('');
         setUsername(res.data.username);
         setPartialEmail('');
-        setSelectedDomain('@porsche-corporate.com');
         setPassword('');
-        setTimeout(() => {
-          window.location.href = '/register';
-        }, 1);
+        window.location.href = '/register';
       }
     } catch (err) {
       setError(err.response?.data?.message || 'Signin failed');

@@ -1,194 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const names = [
-  { name: 'Anna Becker', email: 'anna.becker@porsche-executive.com' },
-  { name: 'Liam Chen', email: 'liam.chen@porsche.com' },
-  { name: 'Soham Grover', email: 'soham.grover@porsche-engineering.com' },
-  { name: 'James Smith', email: 'james.smith@porsche-corporate.com' },
-  { name: 'Lucas Wang', email: 'lucas.wang@porsche-janitorial.com' },
-  { name: 'Olivia Brown', email: 'olivia.brown@porsche-executive.com' },
-  { name: 'Noah Patel', email: 'noah.patel@porsche.com' },
-  { name: 'Mia Rossi', email: 'mia.rossi@porsche-engineering.com' },
-  { name: 'Ethan Kim', email: 'ethan.kim@porsche-corporate.com' },
-  { name: 'Emma Dubois', email: 'emma.dubois@porsche-janitorial.com' },
-  { name: 'David Lee', email: 'david.lee@porsche.com' },
-  { name: 'Sophia Garcia', email: 'sophia.garcia@porsche-executive.com' },
-  { name: 'Benjamin Novak', email: 'benjamin.novak@porsche-engineering.com' },
-  { name: 'Chloe Evans', email: 'chloe.evans@porsche-corporate.com' },
-  { name: 'Jack Wilson', email: 'jack.wilson@porsche.com' },
-  { name: 'Grace Taylor', email: 'grace.taylor@porsche-janitorial.com' },
-  { name: 'Leo Fischer', email: 'leo.fischer@porsche-executive.com' },
-  { name: 'Ella Martin', email: 'ella.martin@porsche-engineering.com' },
-  { name: 'Henry Clark', email: 'henry.clark@porsche-corporate.com' },
-  { name: 'Ava Lopez', email: 'ava.lopez@porsche.com' }
-];
 
-const spammerNames = [
-  { name: 'Viktor Cashman', email: 'viktor.cashman@porsche-corporate.com' },
-  { name: 'Lola Winbig', email: 'lola.winbig@porsche-janitorial.com' },
-  { name: 'Prince Nduka', email: 'prince.nduka@porsche-executive.com' },
-  { name: 'Crypto Mike', email: 'crypto.mike@porsche-engineering.com' },
-  { name: 'Slick Rick', email: 'slick.rick@porsche.com' },
-  { name: 'Felicity Fortune', email: 'felicity.fortune@porsche-corporate.com' },
-  { name: 'Richie Scamz', email: 'richie.scamz@porsche-janitorial.com' },
-  { name: 'Mona Lott', email: 'mona.lott@porsche-executive.com' },
-  { name: 'Baron Von Cash', email: 'baron.cash@porsche-engineering.com' },
-  { name: 'Goldie Quick', email: 'goldie.quick@porsche.com' }
-];
-
-const subjects = {
-  Inbox: [
-    'Project Update: Q2 Milestones',
-    'Team Meeting Tomorrow',
-    'Client Feedback Received',
-    'Lunch & Learn Invitation',
-    'Reminder: Submit Timesheet',
-    'Welcome to Porsche AU!',
-    'Security Training Required',
-    'Office WiFi Maintenance',
-    'New Company Policies',
-    'Happy Birthday!'
-  ],
-  Sent: [
-    'Re: Project Update',
-    'Follow-up: Meeting Notes',
-    'Fwd: Client Feedback',
-    'Thank You!',
-    'Leave Application',
-    'Request for Documents',
-    'Weekly Report',
-    'Invoice Submission',
-    'Schedule Confirmation',
-    'Quick Question'
-  ],
-  Drafts: [
-    'Draft: Budget Proposal',
-    'Draft: Event Planning',
-    'Draft: New Hire Onboarding',
-    'Draft: Product Launch',
-    'Draft: IT Support Request',
-    'Draft: Marketing Strategy',
-    'Draft: Internal Memo',
-    'Draft: Customer Survey',
-    'Draft: Meeting Agenda',
-    'Draft: Policy Update'
-  ],
-  Spam: [
-    'Congratulations! You Won',
-    'Urgent: Update Your Account',
-    'Limited Time Offer',
-    'Claim Your Gift Card',
-    'Action Required: Suspicious Login',
-    'Get Rich Quick!',
-    'Free Vacation Awaits',
-    'Exclusive Deal Inside',
-    'You Have a New Message',
-    'Final Notice'
-  ]
-};
-
-const snippets = {
-  Inbox: [
-    'Please see the attached document for the latest project milestones.',
-    'Don’t forget our team meeting at 10am in Conference Room B.',
-    'The client has provided feedback on the recent proposal.',
-    'Join us for a Lunch & Learn session this Friday.',
-    'Friendly reminder to submit your timesheet by EOD.',
-    'We are excited to welcome you to the Porsche Australia team!',
-    'All employees must complete the security training by April 30.',
-    'WiFi maintenance is scheduled for this weekend.',
-    'Please review the updated company policies attached.',
-    'Wishing you a fantastic birthday from all of us!'
-  ],
-  Sent: [
-    'Thank you for the update. Please see my comments below.',
-    'Here are the notes from today’s meeting.',
-    'Forwarding the client’s feedback for your review.',
-    'Thank you for your support on this project.',
-    'I would like to apply for leave next week.',
-    'Please find the requested documents attached.',
-    'Attached is the weekly report for your review.',
-    'Invoice for last month’s services is attached.',
-    'Confirming our meeting for Thursday at 2pm.',
-    'Quick question regarding the new process.'
-  ],
-  Drafts: [
-    'Initial draft of the budget proposal for your review.',
-    'Planning details for the upcoming event.',
-    'Checklist for onboarding the new hire.',
-    'Outline for the product launch campaign.',
-    'Requesting IT support for laptop issues.',
-    'Drafting the marketing strategy for Q3.',
-    'Internal memo regarding office updates.',
-    'Customer survey draft for feedback collection.',
-    'Agenda for next week’s meeting.',
-    'Draft of the updated policy document.'
-  ],
-  Spam: [
-    'You have been selected for a special prize. Click to claim.',
-    'Your account needs urgent attention. Update now.',
-    'Don’t miss this exclusive offer. Limited time only!',
-    'Claim your $1000 gift card today.',
-    'Suspicious login detected. Please verify your account immediately.',
-    'Earn money fast with this simple trick!',
-    'Pack your bags for a free vacation!',
-    'Unlock your exclusive deal inside.',
-    'You have a new private message waiting.',
-    'This is your final notice. Act now!'
-  ]
-};
-
-const contents = {
-  Inbox: [
-    'Hi team,\n\nPlease see the attached document for the latest project milestones. Let me know if you have any questions.\n\nBest,',
-    'Reminder: Our team meeting is scheduled for tomorrow at 10am in Conference Room B. Please be on time.\n\nThanks!',
-    'The client has provided feedback on the recent proposal. I have attached their comments for your review.\n\nRegards,',
-    'You are invited to a Lunch & Learn session this Friday at noon. RSVP if you can make it!\n\nBest,',
-    'This is a friendly reminder to submit your timesheet by the end of the day.\n\nThank you!',
-    'Welcome to Porsche Australia! We are thrilled to have you on board.\n\nBest wishes,',
-    'All employees are required to complete the security training by April 30. Please use the link provided in the portal.\n\nHR Team',
-    'Office WiFi maintenance is scheduled for this weekend. Expect brief outages.\n\nIT Department',
-    'Please review the updated company policies attached to this email.\n\nBest,',
-    'Happy Birthday! Wishing you a fantastic year ahead.\n\nThe Porsche Team'
-  ],
-  Sent: [
-    'Thank you for the update. Please see my comments below and let me know your thoughts.\n\nBest,',
-    'Here are the notes from today’s meeting. Let me know if I missed anything.\n\nThanks!',
-    'Forwarding the client’s feedback for your review. Please advise on next steps.\n\nRegards,',
-    'Thank you for your support on this project. Looking forward to working together again.\n\nBest,',
-    'I would like to apply for leave from April 21 to April 25.\n\nThank you.',
-    'Please find the requested documents attached. Let me know if you need anything else.\n\nBest,',
-    'Attached is the weekly report for your review.\n\nRegards,',
-    'Invoice for last month’s services is attached. Please confirm receipt.\n\nThank you.',
-    'Confirming our meeting for Thursday at 2pm in your office.\n\nBest,',
-    'Quick question regarding the new process: Should we submit reports weekly or monthly?'
-  ],
-  Drafts: [
-    'Initial draft of the budget proposal for your review. Please provide feedback.\n\nThanks!',
-    'Planning details for the upcoming event. Still working on the schedule.\n\nBest,',
-    'Checklist for onboarding the new hire. Will finalize after HR review.\n\nRegards,',
-    'Outline for the product launch campaign. Need input from marketing.\n\nThanks!',
-    'Requesting IT support for laptop issues. Will add details before sending.\n\nBest,',
-    'Drafting the marketing strategy for Q3. Awaiting data from analytics.\n\nThanks!',
-    'Internal memo regarding office updates. Will circulate after approval.\n\nBest,',
-    'Customer survey draft for feedback collection. Need to finalize questions.\n\nThanks!',
-    'Agenda for next week’s meeting. Will confirm topics with the team.\n\nBest,',
-    'Draft of the updated policy document. Pending legal review.\n\nThanks!'
-  ],
-  Spam: [
-    'Congratulations! You have been selected for a special prize. Click the link to claim your reward.\n\nBest wishes!',
-    'Your account needs urgent attention. Update your information now to avoid suspension.\n\nSupport Team',
-    'Don’t miss this exclusive offer. Limited time only! Click to learn more.',
-    'Claim your $1000 gift card today. Offer expires soon.',
-    'Suspicious login detected. Please verify your account immediately.',
-    'Earn money fast with this simple trick! No experience needed.',
-    'Pack your bags for a free vacation! Click to reserve your spot.',
-    'Unlock your exclusive deal inside. Don’t miss out!',
-    'You have a new private message waiting. Log in to view.',
-    'This is your final notice. Act now to avoid losing access.'
-  ]
-};
 
 const Sidebar = ({ folders, currentFolder, setCurrentFolder, onCompose }) => (
   <div className="bg-white/70 h-full p-4 border-r border-white/30 shadow-lg">
@@ -319,7 +132,7 @@ const EmailDetail = ({ email, onReply }) => {
 
 const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
 const OPENAI_API_KEY = import.meta.env.OPENAI_API_KEY;
-const ComposeModal = ({ isOpen, onClose, onSend, composeTo, setComposeTo, composeSubject, setComposeSubject, composeBody, setComposeBody }) => {
+const ComposeModal = ({ isOpen, onClose, onSend, onSaveDraft, editingDraftId, composeTo, setComposeTo, composeSubject, setComposeSubject, composeBody, setComposeBody }) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showAIPrompt, setShowAIPrompt] = useState(false);
   const [aiPrompt, setAIPrompt] = useState('');
@@ -353,13 +166,37 @@ const ComposeModal = ({ isOpen, onClose, onSend, composeTo, setComposeTo, compos
     setAIPrompt('');
   };
 
+  const handleClose = async () => {
+    // Save as draft if there's any content
+    if (composeTo.trim() || composeSubject.trim() || composeBody.trim()) {
+      const token = localStorage.getItem('token');
+      try {
+        await axios.post('http://localhost:3000/draft', {
+          receiver: composeTo,
+          subject: composeSubject,
+          content: composeBody
+        }, { headers: { Authorization: 'Bearer ' + token } });
+        // Refresh emails to show the new draft
+        refreshEmails();
+      } catch (err) {
+        console.error('Failed to save draft:', err);
+      }
+    }
+    
+    // Clear the form
+    setComposeTo('');
+    setComposeSubject('');
+    setComposeBody('');
+    onClose();
+  };
+
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white/90 w-11/12 md:w-1/2 lg:w-1/3 rounded-lg shadow-2xl outline outline-4 outline-gradient-to-r from-violet-500 via-fuchsia-500 to-orange-500 animate-gradient animate-fadeIn">
         <div className="flex justify-between items-center border-b px-6 py-4">
           <h3 className="text-xl font-semibold text-fuchsia-700">Compose Email</h3>
-          <button onClick={onClose} className="text-gray-600 hover:text-fuchsia-700 text-2xl transition duration-200 cursor-pointer">&times;</button>
+          <button onClick={handleClose} className="text-gray-600 hover:text-fuchsia-700 text-2xl transition duration-200 cursor-pointer">&times;</button>
         </div>
         <div className="px-6 py-4">
           <input
@@ -416,10 +253,16 @@ const ComposeModal = ({ isOpen, onClose, onSend, composeTo, setComposeTo, compos
         </div>
         <div className="flex justify-end items-center border-t px-6 py-4">
           <button
-            onClick={onClose}
+            onClick={onSaveDraft}
+            className="mr-4 bg-orange-300 text-gray-800 py-2 px-4 rounded hover:bg-orange-400 transition duration-200 cursor-pointer"
+          >
+            {editingDraftId ? 'Update Draft' : 'Save Draft'}
+          </button>
+          <button
+            onClick={handleClose}
             className="mr-4 bg-gray-300 text-gray-800 py-2 px-4 rounded hover:bg-fuchsia-200 hover:text-fuchsia-700 transition duration-200 cursor-pointer"
           >
-            Cancel
+            Save as Draft
           </button>
           <button
             onClick={onSend}
@@ -498,7 +341,7 @@ const HamburgerMenuModal = ({ isOpen, onClose }) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white/95 rounded-lg shadow-2xl p-8 min-w-[300px] flex flex-col gap-4 animate-fadeIn">
         <button onClick={onClose} className="self-end text-2xl text-gray-500 hover:text-fuchsia-700 cursor-pointer">✕</button>
-        <button className="py-2 px-4 rounded hover:bg-fuchsia-100 text-fuchsia-700 text-lg font-semibold cursor-pointer">Account</button>
+        <a href="/account" className="py-2 px-4 rounded hover:bg-fuchsia-100 text-fuchsia-700 text-lg font-semibold cursor-pointer">Account</a>
         <button className="py-2 px-4 rounded hover:bg-fuchsia-100 text-fuchsia-700 text-lg font-semibold cursor-pointer">Profile</button>
         <button className="py-2 px-4 rounded hover:bg-fuchsia-100 text-fuchsia-700 text-lg font-semibold cursor-pointer">More</button>
       </div>
@@ -508,8 +351,8 @@ const HamburgerMenuModal = ({ isOpen, onClose }) => {
 
 
 const Dashboard = () => {
-  // Use only Inbox and Sent folders
-  const folders = ['Inbox', 'Sent'];
+  
+  const folders = ['Inbox', 'Sent', 'Drafts'];
   const [currentFolder, setCurrentFolder] = useState('Inbox');
   const [selectedEmail, setSelectedEmail] = useState(null);
   const [isComposeOpen, setIsComposeOpen] = useState(false);
@@ -525,6 +368,8 @@ const Dashboard = () => {
   const [composeTo, setComposeTo] = useState('');
   const [composeSubject, setComposeSubject] = useState('');
   const [composeBody, setComposeBody] = useState('');
+  const [drafts, setDrafts] = useState([]);
+  const [editingDraftId, setEditingDraftId] = useState(null);
 
   
   useEffect(() => {
@@ -549,12 +394,20 @@ const Dashboard = () => {
       .catch(err => {
         console.error(err);
       });
+    axios.get('http://localhost:3000/drafts', { headers: { Authorization: 'Bearer ' + token } })
+      .then(res => {
+        if (res.data.success) {
+          setDrafts(res.data.drafts);
+        }
+      })
+      .catch(err => console.error(err));
   }, []);
 
   
-  const emailsForFolder = emails.filter((email) => {
+  const emailsForFolder = (currentFolder === 'Drafts' ? drafts : emails).filter((email) => {
     if (currentFolder === 'Inbox' && email.receiver !== userEmail) return false;
     if (currentFolder === 'Sent' && email.sender !== userEmail) return false;
+    if (currentFolder === 'Drafts' && !email.isDraft) return false;
     if (!searchTerm) return true;
     const term = searchTerm.toLowerCase();
     return (
@@ -565,7 +418,15 @@ const Dashboard = () => {
   });
 
   const handleSelectEmail = (email) => {
-    setSelectedEmail(email);
+    if (currentFolder === 'Drafts') {
+      setEditingDraftId(email.id);
+      setComposeTo(email.receiver || '');
+      setComposeSubject(email.subject || '');
+      setComposeBody(email.content || '');
+      setIsComposeOpen(true);
+    } else {
+      setSelectedEmail(email);
+    }
   };
 
   const refreshEmails = () => {
@@ -580,13 +441,27 @@ const Dashboard = () => {
         console.error(err);
       });
   };
-
+  const refreshDrafts = () => {
+    const token = localStorage.getItem('token');
+    axios.get('http://localhost:3000/drafts', { headers: { Authorization: 'Bearer ' + token } })
+      .then(res => {
+        if (res.data.success) {
+          setDrafts(res.data.drafts);
+        }
+      })
+      .catch(err => console.error(err));
+  };
   const handleComposeOpen = () => {
+    setEditingDraftId(null);
+    setComposeTo('');
+    setComposeSubject('');
+    setComposeBody('');
     setIsComposeOpen(true);
   };
 
   const handleComposeClose = () => {
     setIsComposeOpen(false);
+    setEditingDraftId(null);
   };
 
   const handleSendEmail = () => {
@@ -599,10 +474,16 @@ const Dashboard = () => {
       .then(res => {
         if (res.data.success) {
           refreshEmails();
+          if (editingDraftId) {
+            axios.delete(`http://localhost:3000/drafts/${editingDraftId}`, { headers: { Authorization: 'Bearer ' + token } })
+              .then(() => refreshDrafts())
+              .catch(() => {});
+          }
           setIsComposeOpen(false);
           setComposeTo('');
           setComposeSubject('');
           setComposeBody('');
+          setEditingDraftId(null);
         }
       })
       .catch(err => {
@@ -618,7 +499,22 @@ const Dashboard = () => {
   const handleReplyClose = () => {
     setIsReplyOpen(false);
   };
-
+  const handleSaveDraft = () => {
+    const token = localStorage.getItem('token');
+    const data = { receiver: composeTo, subject: composeSubject, content: composeBody };
+    if (editingDraftId) {
+      axios.put(`http://localhost:3000/drafts/${editingDraftId}`, data, { headers: { Authorization: 'Bearer ' + token } })
+        .then(() => { refreshDrafts(); setIsComposeOpen(false); setEditingDraftId(null); })
+        .catch(() => {});
+    } else {
+      axios.post('http://localhost:3000/drafts', data, { headers: { Authorization: 'Bearer ' + token } })
+        .then(() => { refreshDrafts(); setIsComposeOpen(false); })
+        .catch(() => {});
+    }
+    setComposeTo('');
+    setComposeSubject('');
+    setComposeBody('');
+  };
   const handleSendReply = () => {
     if (!selectedEmail) return;
     const replySubject = selectedEmail.subject.startsWith('Re:') ? selectedEmail.subject : `Re: ${selectedEmail.subject}`;
@@ -734,6 +630,8 @@ const Dashboard = () => {
         setComposeSubject={setComposeSubject}
         composeBody={composeBody}
         setComposeBody={setComposeBody}
+        onSaveDraft={handleSaveDraft}
+        editingDraftId={editingDraftId}
       />
       <ReplyModal
         isOpen={isReplyOpen}

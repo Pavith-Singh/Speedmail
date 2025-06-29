@@ -29,7 +29,7 @@ app.post('/register', async (req, res) => {
   const isAdmin = email.endsWith('@porsche-corporate.com') || email.endsWith('@porsche-executive.com') ? 1 : 0;
 
   db.run(
-    'INSERT INTO users (email, username_encrypted, password_hashed, admin_access) VALUES (?, ?, ?, ?)',
+    'INSERT INTO users (email, username_encrypted, password_hashed, Admin_access) VALUES (?, ?, ?, ?)',
     [email, usernameEncrypted, passwordHashed, isAdmin],
     function (err) {
       if (err) {
@@ -66,7 +66,7 @@ app.post('/login', (req, res) => {
     }
 
     const username = decrypt(row.username_encrypted);
-    const isAdmin = row.admin_access === 1;
+    const isAdmin = Number(row.Admin_access) === 1;
     const token = jwt.sign({ email, isAdmin }, JWT_SECRET, { expiresIn: '2h' });
 
     console.log('User logged in successfully');
@@ -86,7 +86,7 @@ app.post('/send', authenticateToken, (req, res) => {
     const contentEncrypted = encrypt(content);
     
     db.run(
-        'INSERT INTO emails (sender, receiver, subject, content, date) VALUES (?, ?, ?, ?, ?)',
+        'INSERT INTO emails (sender, receiver, subject, content, date, is_draft) VALUES (?, ?, ?, ?, ?, 0)',
         [sender, receiver, subjectEncrypted, contentEncrypted, date],
         function(err) {
             if (err) {
@@ -99,10 +99,93 @@ app.post('/send', authenticateToken, (req, res) => {
 });
 
 
+app.post('/drafts', authenticateToken, (req, res) => {
+    const { receiver, subject, content } = req.body;
+    const sender = req.user.email;
+    const date = new Date().toISOString();
+    const subjectEncrypted = encrypt(subject || '(No Subject)');
+    const contentEncrypted = encrypt(content || '');
+    db.run(
+        'INSERT INTO emails (sender, receiver, subject, content, date, is_draft) VALUES (?, ?, ?, ?, ?, 1)',
+        [sender, receiver, subjectEncrypted, contentEncrypted, date],
+        function(err) {
+            if (err) {
+                console.log('Error saving draft:', err);
+                return res.status(500).json({ message: 'Failed to save draft' });
+            }
+            res.json({ success: true, draftId: this.lastID });
+        }
+    );
+});
+
+app.put('/drafts/:id', authenticateToken, (req, res) => {
+    const { receiver, subject, content } = req.body;
+    const draftId = req.params.id;
+    const email = req.user.email;
+    const subjectEncrypted = encrypt(subject || '(No Subject)');
+    const contentEncrypted = encrypt(content || '');
+    db.run(
+        'UPDATE emails SET receiver = ?, subject = ?, content = ?, date = ?, is_draft = 1 WHERE id = ? AND sender = ? AND is_draft = 1',
+        [receiver, subjectEncrypted, contentEncrypted, new Date().toISOString(), draftId, email],
+        function(err) {
+            if (err) {
+                console.log('Error updating draft:', err);
+                return res.status(500).json({ message: 'Failed to update draft' });
+            }
+            res.json({ success: true });
+        }
+    );
+});
+
+app.delete('/drafts/:id', authenticateToken, (req, res) => {
+    const draftId = req.params.id;
+    const email = req.user.email;
+    db.run(
+        'DELETE FROM emails WHERE id = ? AND sender = ? AND is_draft = 1',
+        [draftId, email],
+        function(err) {
+            if (err) {
+                console.log('Error deleting draft:', err);
+                return res.status(500).json({ message: 'Failed to delete draft' });
+            }
+            res.json({ success: true });
+        }
+    );
+});
+
+app.get('/drafts', authenticateToken, (req, res) => {
+    const email = req.user.email;
+    db.all(
+        'SELECT * FROM emails WHERE sender = ? AND is_draft = 1 ORDER BY date DESC',
+        [email],
+        (err, rows) => {
+            if (err) {
+                console.log('Error retrieving drafts:', err);
+                return res.status(500).json({ message: 'Failed to retrieve drafts' });
+            }
+            const decryptedRows = rows.map(row => ({
+                ...row,
+                subject: decrypt(row.subject),
+                content: decrypt(row.content)
+            }));
+            res.json({ success: true, drafts: decryptedRows });
+        }
+    );
+});
+
+app.get('/account', authenticateToken, (req, res) => {
+  const email = req.user.email;
+  db.get('SELECT email, username_encrypted FROM users WHERE email = ?', [email], (err, row) => {
+    if (err || !row) return res.status(400).json({ message: 'User not found' });
+    const username = decrypt(row.username_encrypted);
+    res.json({ email, username });
+  });
+});
+
 app.get('/emails', authenticateToken, (req, res) => {
     const userEmail = req.user.email;
     db.all(
-        'SELECT * FROM emails WHERE receiver = ? OR sender = ? ORDER BY date DESC',
+        'SELECT * FROM emails WHERE (receiver = ? OR sender = ?) AND is_draft = 0 ORDER BY date DESC',
         [userEmail, userEmail],
         (err, rows) => {
             if (err) {
