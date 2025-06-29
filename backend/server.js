@@ -4,14 +4,24 @@ const cors = require('cors');
 const crypto = require('crypto');
 const db = require('./database');
 const jwt = require('jsonwebtoken');
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
-app.use(express.json());
+app.use(express.json({ limit: '5mb' }));
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'http://localhost:5173');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  next();
+});
 app.use(cors({
   origin: 'http://localhost:5173',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+app.use('/profile_pics', express.static(path.join(__dirname, 'profile_pics')));
 
 const JWT_SECRET = 'your_jwt_secret_key_here';
 
@@ -81,7 +91,7 @@ app.post('/send', authenticateToken, (req, res) => {
         return res.status(400).json({ message: 'Receiver and content are required' });
     }
     const sender = req.user.email;
-    const date = new Date().toISOString();
+    const date = formatDate(new Date());
     const subjectEncrypted = encrypt(subject || '(No Subject)');
     const contentEncrypted = encrypt(content);
     
@@ -102,7 +112,7 @@ app.post('/send', authenticateToken, (req, res) => {
 app.post('/drafts', authenticateToken, (req, res) => {
     const { receiver, subject, content } = req.body;
     const sender = req.user.email;
-    const date = new Date().toISOString();
+    const date = formatDate(new Date());
     const subjectEncrypted = encrypt(subject || '(No Subject)');
     const contentEncrypted = encrypt(content || '');
     db.run(
@@ -182,6 +192,37 @@ app.get('/account', authenticateToken, (req, res) => {
   });
 });
 
+app.put('/account', authenticateToken, async (req, res) => {
+  const email = req.user.email;
+  const { newUsername, newPassword, profilePic } = req.body;
+  const updates = [];
+  const params = [];
+  if (newUsername) {
+    updates.push('username_encrypted = ?');
+    params.push(encrypt(newUsername));
+  }
+  if (newPassword) {
+    const hash = await bcrypt.hash(newPassword, 10);
+    updates.push('password_hashed = ?');
+    params.push(hash);
+  }
+  if (updates.length) {
+    params.push(email);
+    db.run(`UPDATE users SET ${updates.join(', ')} WHERE email = ?`, params, err => {
+      if (err) return res.status(500).json({ message: 'Failed to update user' });
+    });
+  }
+  if (profilePic) {
+    try {
+      const buffer = Buffer.from(profilePic, 'base64');
+      fs.writeFileSync(path.join(__dirname, 'profile_pics', `${email}.png`), buffer);
+    } catch (e) {
+      return res.status(500).json({ message: 'Failed to save profile picture' });
+    }
+  }
+  res.json({ success: true });
+});
+
 app.get('/emails', authenticateToken, (req, res) => {
     const userEmail = req.user.email;
     db.all(
@@ -220,6 +261,14 @@ function authenticateToken(req, res, next) {
 
 const ENCRYPTION_KEY = Buffer.from('0123456789abcdef0123456789abcdef', 'utf8');
 const IV_LENGTH = 16;
+function formatDate(d) {
+  const pad = (n) => String(n).padStart(2, '0');
+  return (
+    `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}` +
+    ` - ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
+  );
+}
+
 
 function encrypt(text) {
   const iv = crypto.randomBytes(IV_LENGTH);

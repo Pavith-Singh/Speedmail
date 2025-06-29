@@ -5,6 +5,7 @@ import Home from "./Home"
 import Dashboard from "./dashboard"
 import AdminSignin from "./AdminSignin"
 import Account from "./Account"
+import ManageAccount from "./ManageAccount"
 
 const App = () => {
   return (
@@ -16,6 +17,7 @@ const App = () => {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/adminsignin" element={<AdminSignin />} />
         <Route path="/account" element={<Account />} />
+        <Route path="/manage-account" element={<ManageAccount />} />
       </Routes>
     </Router>
   )
