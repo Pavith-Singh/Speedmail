@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaSearch } from 'react-icons/fa';
+import { FaPaperclip } from 'react-icons/fa';
 const Sidebar = ({ folders, currentFolder, setCurrentFolder, onCompose }) => (
   <div className="bg-white/70 h-full p-4 border-r border-white/30 shadow-lg">
     <div className="flex flex-col h-full">
@@ -259,13 +260,26 @@ const ComposeModal = ({
             </div>
           )}
 
-          <textarea
-            placeholder="Write your message here…"
-            rows="6"
-            value={composeBody}
-            onChange={(e) => setComposeBody(e.target.value)}
-            className="w-full border border-fuchsia-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-fuchsia-500"
-          />
+          <div className="relative mb-4">
+            <textarea
+              placeholder="Write your message here…"
+              rows="6"
+              value={composeBody}
+              onChange={(e) => setComposeBody(e.target.value)}
+              className="w-full border border-fuchsia-300 p-2 pr-10 rounded focus:outline-none focus:ring-2 focus:ring-fuchsia-500"
+            />
+            <div className="absolute top-3 right-3 group">
+              <FaPaperclip
+                className="text-black text-xl opacity-80 cursor-pointer"
+                title="Upload file"
+              />
+              <span
+                className="absolute left-1/2 -top-8 -translate-x-1/2 px-3 py-1 rounded bg-black/90 text-white text-xs opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200 whitespace-nowrap z-50 shadow"
+              >
+                Upload file
+              </span>
+            </div>
+          </div>
         </div>
         <div className="flex justify-end items-center border-t px-6 py-4">
           <button

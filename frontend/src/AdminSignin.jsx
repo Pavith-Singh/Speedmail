@@ -4,6 +4,7 @@ import visible from './assets/eye.png'
 import invisible from './assets/eye_closed.png'
 import arrow from './assets/arrow.png'
 import axios from 'axios'; 
+import { FaFingerprint } from 'react-icons/fa';
 
 function AdminSignin() {
   const [showPassword, setShowPassword] = useState(false);
@@ -45,7 +46,17 @@ function AdminSignin() {
           <a href="/" className="absolute top-4 left-4 hover:scale-110 transition duration-300 ease-in-out">
             <img src={arrow} alt="Back" className="w-8 h-8 cursor-pointer" />
           </a>
-          <h1 className="text-5xl font-bold text-white">Admin Sign In</h1>
+          <h1 className="text-5xl font-bold text-white flex items-center gap-4">
+            Admin Sign In
+            <div className="relative group">
+              <FaFingerprint className="text-white text-3xl cursor-pointer" />
+              <span
+                className="absolute left-1/2 -top-8 -translate-x-1/2 px-3 py-1 rounded bg-black/90 text-white text-xs opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200 whitespace-nowrap z-50 shadow"
+              >
+                Sign in with fingerprint
+              </span>
+            </div>
+          </h1>
           
           <form className="w-full flex flex-col gap-4" onSubmit={handleSignin}>
             
