@@ -23,8 +23,7 @@ function Register() {
     
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
-      console.log("Token payload:", payload);  // Debug: check token content
-      // If the token doesn't indicate admin privileges, redirect
+      console.log("Token payload:", payload);  
       if (!payload.isAdmin) {
         window.location.href = '/register';
       }
@@ -38,12 +37,10 @@ function Register() {
     setError('');
     setSuccess('');
     const email = partialEmail + selectedDomain;
-    // lowercase, uppercase, numbers, and periods only
     if (!/^[a-zA-Z0-9.]+$/.test(partialEmail)) {
       setError('No special characters or spaces allowed');
       return;
     }
-    // Password: at least 8 chars, includes letters and numbers
     if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(password)) {
       setError('Password must be at least 8 characters and include both letters and numbers');
       return;
@@ -169,7 +166,7 @@ function Register() {
               </div>
             </div>
             <button type ="submit" className="hover:scale-102  text-white px-10 py-2 text-2xl rounded-md bg-violet-500 hover:bg-violet-400 transition duration-300 ease-in-out outline outline-white cursor-pointer">Register</button>
-            {error && <div className='text-red-400'>{error}</div>}
+            {error && <div className='text-red-200'>{error}</div>}
             {success && <div className='text-green-400'>{success}</div>}
             <p className="text-sm text-white font-semibold">Already Registered? <a href="/signin" className="text-orange-400 hover:underline">Sign-In</a></p>
           </form>

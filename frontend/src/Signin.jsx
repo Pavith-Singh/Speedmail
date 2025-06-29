@@ -112,7 +112,7 @@ function Signin() {
            
             <button type="submit" className="hover:scale-102  text-white px-10 py-2 text-2xl rounded-md bg-violet-500 hover:bg-violet-400 transition duration-300 ease-in-out outline outline-white cursor-pointer">Sign-In</button>
             
-            {error && <div className='text-red-400'>{error}</div>}
+            {error && <div className='text-red-200'>{error}</div>}
             {success && <div className='text-green-400'>{success}</div>}
             <p className="text-sm text-white font-semibold">Not Registered? <a href="/adminsignin" className="text-orange-400 hover:underline">Register</a></p>
           </form>
