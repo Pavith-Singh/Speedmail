@@ -17,6 +17,6 @@
 html, body {
   min-height: 100%;
   background: linear-gradient(to right, #8b5cf6 10%, #d946ef 50%, #fb923c 100%);
-  background-color: #a21caf;
+  background-color: #fb923c;
   overscroll-behavior: contain;
 }
