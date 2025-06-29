@@ -10,13 +10,13 @@ const path = require('path');
 const app = express();
 app.use(express.json({ limit: '5mb' }));
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'http://localhost:5173');
+  res.header('Access-Control-Allow-Origin', 'https://speedmail.vercel.app');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   next();
 });
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: 'https://speedmail.vercel.app',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
