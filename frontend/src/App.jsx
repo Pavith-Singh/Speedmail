@@ -6,6 +6,7 @@ import Dashboard from "./dashboard"
 import AdminSignin from "./AdminSignin"
 import Account from "./Account"
 import ManageAccount from "./ManageAccount"
+import AdminPanel from "./AdminPanel"
 
 const App = () => {
   return (
@@ -18,6 +19,7 @@ const App = () => {
         <Route path="/adminsignin" element={<AdminSignin />} />
         <Route path="/account" element={<Account />} />
         <Route path="/manage-account" element={<ManageAccount />} />
+        <Route path="/admin" element={<AdminPanel />} />
       </Routes>
     </Router>
   )

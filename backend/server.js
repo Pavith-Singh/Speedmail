@@ -9,14 +9,14 @@ const path = require('path');
 
 const app = express();
 app.use(express.json({ limit: '5mb' }));
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'https://speedmail.vercel.app');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  next();
-});
+
+const allowedOrigins = ['https://speedmail.vercel.app', 'http://localhost:5173'];
+
 app.use(cors({
-  origin: 'https://speedmail.vercel.app',
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error('Not allowed by CORS'));
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
@@ -243,9 +243,6 @@ app.get('/emails', authenticateToken, (req, res) => {
     );
 });
 
-app.use((_req, res) => {
-  res.send('Porsche API is running at full speed 🚗💨');
-});
 
 function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
@@ -258,6 +255,58 @@ function authenticateToken(req, res, next) {
     next();
   });
 }
+
+function requireAdmin(req, res, next) {
+  if (!req.user?.isAdmin) {
+    return res.status(403).json({ message: 'Admin access required' });
+  }
+  next();
+}
+
+app.get('/users', authenticateToken, requireAdmin, (req, res) => {
+  console.log('GET /users request by', req.user.email);
+  db.all('SELECT email, username_encrypted, Admin_access FROM users', [], (err, rows) => {
+    if (err) return res.status(500).json({ message: 'Failed to fetch users' });
+    const users = rows.map(r => ({
+      email: r.email,
+      username: decrypt(r.username_encrypted),
+      isAdmin: !!r.Admin_access
+    }));
+    res.json({ success: true, users });
+  });
+});
+
+app.put('/users/:email', authenticateToken, requireAdmin, async (req, res) => {
+  const target = req.params.email;
+  const { username, password, isAdmin, profilePic } = req.body;
+  const updates = [];
+  const params = [];
+
+  if (username) { updates.push('username_encrypted = ?'); params.push(encrypt(username)); }
+  if (password) { updates.push('password_hashed = ?'); params.push(await bcrypt.hash(password, 10)); }
+  if (typeof isAdmin !== 'undefined') { updates.push('Admin_access = ?'); params.push(isAdmin ? 1 : 0); }
+
+  if (updates.length) {
+    params.push(target);
+    db.run(`UPDATE users SET ${updates.join(', ')} WHERE email = ?`, params, err => {
+      if (err) return res.status(500).json({ message: 'Failed to update user' });
+    });
+  }
+
+  if (profilePic) {
+    try {
+      fs.writeFileSync(path.join(__dirname, 'profile_pics', `${target}.png`), Buffer.from(profilePic, 'base64'));
+    } catch { return res.status(500).json({ message: 'Failed to save picture' }); }
+  }
+  res.json({ success: true });
+});
+
+app.delete('/users/:email', authenticateToken, requireAdmin, (req, res) => {
+  db.run('DELETE FROM users WHERE email = ?', [req.params.email], err => {
+    if (err) return res.status(500).json({ message: 'Failed to delete user' });
+    res.json({ success: true });
+  });
+});
 
 const ENCRYPTION_KEY = Buffer.from('0123456789abcdef0123456789abcdef', 'utf8');
 const IV_LENGTH = 16;
@@ -287,4 +336,9 @@ function decrypt(text) {
   return decrypted;
 }
 
-app.listen(3000, () => console.log('Server running on http://localhost:3000'));
+app.use((_req, res) => {
+  res.send('Porsche API is running at full speed 🚗💨');
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
