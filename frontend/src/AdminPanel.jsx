@@ -48,6 +48,7 @@ const AdminPanel = () => {
               <tr className="bg-fuchsia-200">
                 <th className="p-3 text-left">Email</th>
                 <th className="p-3">Username</th>
+                <th className="p-3">Password</th>
                 <th className="p-3">Admin?</th>
                 <th className="p-3 text-center">Actions</th>
               </tr>
@@ -65,6 +66,19 @@ const AdminPanel = () => {
                           onChange={e=>setForm({...form, username:e.target.value})} />
                       )
                       : u.username}
+                  </td>
+                  <td className="p-3">
+                    {editing === u.email ? (
+                      <input
+                        type="password"
+                        className="rounded-md p-2 border-2 border-white bg-white/10 text-fuchsia-900 outline-none transition duration-300 ease-in-out focus:border-orange-500 focus:bg-fuchsia-100 hover:bg-fuchsia-100 w-full"
+                        value={form.password}
+                        onChange={e => setForm({ ...form, password: e.target.value })}
+                        placeholder="New password"
+                      />
+                    ) : (
+                      <span className="text-gray-400">••••••</span>
+                    )}
                   </td>
                   <td className="p-3 text-center">
                     {editing === u.email
